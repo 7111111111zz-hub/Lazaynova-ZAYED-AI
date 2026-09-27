@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: lazaynova_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: lazaynova_db
+      POSTGRES_USER: lazaynova_user
+      POSTGRES_PASSWORD: lazaynova_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lazaynova_user -d lazaynova_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: lazaynova_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build: .
+    container_name: lazaynova_api
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+asyncpg://lazaynova_user:lazaynova_secure_password_2026@db:5432/lazaynova_db
+      REDIS_URL: redis://redis:6379/0
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      SECRET_KEY: ${SECRET_KEY:-lazaynova_super_secret_jwt_key_32bytes_long}
+      ENVIRONMENT: production
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - sandbox_storage:/var/lazaynova/sandbox
+
+volumes:
+  postgres_data:
+  redis_data:
+  sandbox_storage:

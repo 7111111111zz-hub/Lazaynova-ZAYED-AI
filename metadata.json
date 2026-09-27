@@ -1,0 +1,6 @@
+{
+  "name": "Lazaynova AI",
+  "description": "Intelligent neural platform and autonomous agent engine under Zayed Al-Jubaiji.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
