@@ -67,10 +67,11 @@ fun ChatScreen(
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 
-    // Auto-scroll to latest message during streaming or when new items are added
-    LaunchedEffect(messages.size, streamingContent.length) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.size - 1)
+    // Auto-scroll to latest message during streaming or when agent is typing
+    LaunchedEffect(messages.size, streamingContent.length, isStreaming) {
+        val totalCount = messages.size + if (isStreaming) 1 else 0
+        if (totalCount > 0) {
+            listState.animateScrollToItem(totalCount - 1)
         }
     }
 
@@ -267,6 +268,16 @@ fun ChatScreen(
                                 viewModel.toggleReaction(message.id, emoji)
                             }
                         )
+                    }
+
+                    // Dynamic Agent Typing Indicator when processing or streaming
+                    if (isStreaming) {
+                        item(key = "agent_typing_indicator_item") {
+                            AgentTypingIndicator(
+                                statusText = if (streamingContent.isNotEmpty()) "Lazaynova يكتب الرد الآن..." else "Lazaynova يحلل ويهيئ الرد...",
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
                     }
                 }
             }

@@ -35,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.R
 import com.example.data.local.MessageEntity
@@ -70,14 +72,17 @@ fun HomeScreen(
     val viewingCodeCanvas by viewModel.viewingCodeCanvas.collectAsStateWithLifecycle()
     val showMemoryManager by viewModel.showMemoryManager.collectAsStateWithLifecycle()
     val showSettingsDialog by viewModel.showSettingsDialog.collectAsStateWithLifecycle()
+    val showLoginDialog by viewModel.showLoginDialog.collectAsStateWithLifecycle()
+    val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
 
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
 
-    // Scroll to bottom when new messages arrive
-    LaunchedEffect(messages.size, streamingContent.length) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.size - 1)
+    // Scroll to bottom when new messages arrive or when streaming/typing
+    LaunchedEffect(messages.size, streamingContent.length, isStreaming) {
+        val totalCount = messages.size + if (isStreaming) 1 else 0
+        if (totalCount > 0) {
+            listState.animateScrollToItem(totalCount - 1)
         }
     }
 
@@ -302,6 +307,16 @@ fun HomeScreen(
                                 }
                             )
                         }
+
+                        // Dynamic Agent Typing Indicator when processing or streaming
+                        if (isStreaming) {
+                            item(key = "agent_typing_indicator_item") {
+                                AgentTypingIndicator(
+                                    statusText = if (streamingContent.isNotEmpty()) "Lazaynova يكتب الرد الآن..." else "Lazaynova يحلل ويهيئ الرد...",
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -339,6 +354,10 @@ fun HomeScreen(
                     onOpenSettings = {
                         viewModel.toggleLeftDrawer(false)
                         viewModel.toggleSettings(true)
+                    },
+                    onOpenAccount = {
+                        viewModel.toggleLeftDrawer(false)
+                        viewModel.toggleLoginDialog(true)
                     },
                     onClose = { viewModel.toggleLeftDrawer(false) }
                 )
@@ -422,6 +441,26 @@ fun HomeScreen(
             SettingsDialog(
                 onDismiss = { viewModel.toggleSettings(false) }
             )
+        }
+
+        // Login & Cloud Account Dialog
+        if (showLoginDialog) {
+            Dialog(
+                onDismissRequest = { viewModel.toggleLoginDialog(false) },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                LoginScreen(
+                    onLoginSuccess = { user ->
+                        viewModel.login(user)
+                    },
+                    onContinueAsGuest = {
+                        viewModel.toggleLoginDialog(false)
+                    },
+                    onDismiss = {
+                        viewModel.toggleLoginDialog(false)
+                    }
+                )
+            }
         }
     }
 }

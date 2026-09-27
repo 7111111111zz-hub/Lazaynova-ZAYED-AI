@@ -3,6 +3,7 @@ package com.example.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.auth.*
 import com.example.data.local.*
 import com.example.data.remote.GeminiClient
 import com.example.domain.*
@@ -15,6 +16,8 @@ class LazaynovaViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val db = AppDatabase.getDatabase(application)
     private val dao = db.appDao()
+    val authRepository = AuthRepository(application)
+    val currentUser: StateFlow<UserProfile?> = authRepository.currentUser
     val orchestrator = AgentOrchestrator()
     val orchestratorState: StateFlow<OrchestratorState> = orchestrator.state
 
@@ -74,6 +77,32 @@ class LazaynovaViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val _showProjectManager = MutableStateFlow(false)
     val showProjectManager: StateFlow<Boolean> = _showProjectManager.asStateFlow()
+
+    private val _showLoginDialog = MutableStateFlow(false)
+    val showLoginDialog: StateFlow<Boolean> = _showLoginDialog.asStateFlow()
+
+    val isLoggedIn: StateFlow<Boolean> = MutableStateFlow(authRepository.isLoggedIn).apply {
+        viewModelScope.launch {
+            authRepository.currentUser.collect { user ->
+                value = user != null
+            }
+        }
+    }
+
+    fun toggleLoginDialog(show: Boolean) {
+        _showLoginDialog.value = show
+    }
+
+    fun login(user: UserProfile) {
+        viewModelScope.launch {
+            authRepository.signInWithGoogle(user.displayName, user.email)
+            _showLoginDialog.value = false
+        }
+    }
+
+    fun logout() {
+        authRepository.signOut()
+    }
 
     init {
         // Initialize sample projects and memories if empty

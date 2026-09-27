@@ -10,8 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +38,7 @@ fun LeftNavigationDrawer(
     onOpenMemory: () -> Unit,
     onOpenProjects: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenAccount: (() -> Unit)? = null,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -183,7 +183,7 @@ fun LeftNavigationDrawer(
 
                 DrawerItemRow(
                     title = "المكتبة",
-                    icon = Icons.Default.MenuBook,
+                    icon = Icons.AutoMirrored.Filled.MenuBook,
                     onClick = onOpenLibrary,
                     testTag = "drawer_library"
                 )
@@ -198,7 +198,7 @@ fun LeftNavigationDrawer(
 
                 DrawerItemRow(
                     title = "المستندات",
-                    icon = Icons.Default.Article,
+                    icon = Icons.AutoMirrored.Filled.Article,
                     onClick = onOpenLibrary,
                     testTag = "drawer_documents"
                 )
@@ -210,7 +210,7 @@ fun LeftNavigationDrawer(
                     testTag = "drawer_schedule"
                 )
 
-                Divider(
+                HorizontalDivider(
                     color = Color(0xFFF1F5F9),
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 10.dp)
@@ -230,7 +230,7 @@ fun LeftNavigationDrawer(
                 DrawerItemRow(title = "صوت الوكيل", icon = Icons.Default.GraphicEq, onClick = onOpenSettings)
                 DrawerItemRow(title = "الإشعارات", icon = Icons.Default.Notifications, onClick = onOpenSettings)
 
-                Divider(
+                HorizontalDivider(
                     color = Color(0xFFF1F5F9),
                     thickness = 1.dp,
                     modifier = Modifier.padding(vertical = 10.dp)
@@ -305,20 +305,26 @@ fun LeftNavigationDrawer(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onOpenAccount?.invoke() }
+                            .padding(vertical = 4.dp)
+                            .testTag("drawer_account_item"),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
                             imageVector = Icons.Default.PersonOutline,
                             contentDescription = null,
-                            tint = LazaynovaTextSecondary,
+                            tint = LazaynovaPrimary,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "الحساب والاشتراكات",
+                            text = "الحساب والمزامنة السحابية",
                             fontSize = 12.sp,
-                            color = LazaynovaTextSecondary
+                            fontWeight = FontWeight.Medium,
+                            color = LazaynovaTextPrimary
                         )
                     }
                 }

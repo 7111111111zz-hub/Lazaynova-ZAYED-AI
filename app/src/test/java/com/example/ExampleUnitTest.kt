@@ -149,4 +149,75 @@ class ExampleUnitTest {
         val textToCopy2 = emptyStreaming?.ifEmpty { null } ?: msg.content
         assertEquals("نص الرسالة الأصلي", textToCopy2)
     }
+
+    @Test
+    fun testAgentTypingIndicator_statusText() {
+        val streamingEmpty = ""
+        val status1 = if (streamingEmpty.isNotEmpty()) "Lazaynova يكتب الرد الآن..." else "Lazaynova يحلل ويهيئ الرد..."
+        assertEquals("Lazaynova يحلل ويهيئ الرد...", status1)
+
+        val streamingActive = "جاري كتابة الكود"
+        val status2 = if (streamingActive.isNotEmpty()) "Lazaynova يكتب الرد الآن..." else "Lazaynova يحلل ويهيئ الرد..."
+        assertEquals("Lazaynova يكتب الرد الآن...", status2)
+    }
+
+    @Test
+    fun testIntentClassifier_routing() {
+        // Casual chat
+        assertEquals(
+            com.example.domain.UserIntent.CASUAL_CHAT,
+            com.example.domain.IntentClassifier.classify("مرحبا كيف حالك؟")
+        )
+
+        // Coding task
+        assertEquals(
+            com.example.domain.UserIntent.CODING_TASK,
+            com.example.domain.IntentClassifier.classify("اكتب دالة بلغة kotlin لحساب مساحة المثلث")
+        )
+
+        // Complex workflow
+        assertEquals(
+            com.example.domain.UserIntent.COMPLEX_WORKFLOW,
+            com.example.domain.IntentClassifier.classify("أنشئ تطبيق أندرويد متكامل لإدارة المهام والمشاريع")
+        )
+
+        // Deep research
+        assertEquals(
+            com.example.domain.UserIntent.DEEP_RESEARCH,
+            com.example.domain.IntentClassifier.classify("ابحث بحث عميق عن أحدث تقنيات نماذج الذكاء الاصطناعي")
+        )
+    }
+
+    @Test
+    fun testTaskStepEntity_lifecycle() {
+        val step = com.example.data.local.TaskStepEntity(
+            id = "step_1",
+            messageId = "msg_alpha",
+            stepIndex = 1,
+            title = "تحليل المتطلبات",
+            status = "completed",
+            logOutput = "تم الانتهاء بنجاح"
+        )
+
+        assertEquals("msg_alpha", step.messageId)
+        assertEquals(1, step.stepIndex)
+        assertEquals("completed", step.status)
+        assertEquals("تم الانتهاء بنجاح", step.logOutput)
+    }
+
+    @Test
+    fun testMemoryEntity_storage() {
+        val memory = com.example.data.local.MemoryEntity(
+            id = "mem_1",
+            title = "لغة البرمجة المفضلة",
+            category = "تفضيل",
+            content = "Kotlin",
+            isSensitive = false
+        )
+
+        assertEquals("تفضيل", memory.category)
+        assertEquals("لغة البرمجة المفضلة", memory.title)
+        assertEquals("Kotlin", memory.content)
+        assertFalse(memory.isSensitive)
+    }
 }

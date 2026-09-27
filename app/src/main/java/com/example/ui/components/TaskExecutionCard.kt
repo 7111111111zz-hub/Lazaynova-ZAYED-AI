@@ -258,7 +258,7 @@ fun TaskExecutionCard(
                         }
                     }
                     if (!executionLogs.isNullOrEmpty()) {
-                        Divider(
+                        HorizontalDivider(
                             color = Color(0xFF334155),
                             thickness = 1.dp,
                             modifier = Modifier.padding(vertical = 4.dp)
