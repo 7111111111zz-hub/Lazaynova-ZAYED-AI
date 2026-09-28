@@ -1,0 +1,168 @@
+ ┌────────────────────────────────────────────────────────────────────────┐
+│                          Lazaynova AI App                              │
+│                                                                        │
+│ ┌──────────────────────┐  ┌──────────────────────┐  ┌────────────────┐ │
+│ │ Left Nav Drawer      │  │ Main Screen & Chat   │  │ Right Inspector│ │
+│ │ - Library & Media    │  │ - 3D Glow Emblem     │  │ - User Profile │ │
+│ │ - Agents & Memory    │  │ - Message Thread     │  │ - Agent Card   │ │
+│ │ - Settings & Privacy │  │ - Neon Pill Input    │  │ - Quick Tools  │ │
+│ └──────────┬───────────┘  └──────────┬───────────┘  └───────┬────────┘ │
+│            │                         │                      │          │
+│            ▼                         ▼                      ▼          │
+│ ┌────────────────────────────────────────────────────────────────────┐ │
+│ │                  Task Selector Modal Sheet                         │ │
+│ │   [Files | Camera | Images]  [8-Grid Specialized Tools]            │ │
+│ └────────────────────────────────────┬───────────────────────────────┘ │
+└──────────────────────────────────────┼─────────────────────────────────┘
+                                       │
+                                       ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Lazaynova Engine Core                           │
+│                                                                        │
+│   ┌────────────────────┐   Fast Stream   ┌─────────────────────────┐   │
+│   │  Intent Router /   ├────────────────►│ Direct Gemini Streamer  │   │
+│   │  Classifier        │                 │ (gemini-3.5-flash)      │   │
+│   └────────┬───────────┘                 └─────────────────────────┘   │
+│            │ Complex Task                                              │
+│            ▼                                                           │
+│   ┌────────────────────────────────────────────────────────────────┐   │
+│   │ Autonomous Multi-Agent Pipeline                                │   │
+│   │  [Planner] ➔ [Executor / Code Sandbox] ➔ [Verifier & Checker]  │   │
+│   │  (gemini-3.1-pro-preview + High Thinking Level)                │   │
+│   └────────────────────────────────┬───────────────────────────────┘   │
+│                                    │                                   │
+│   ┌────────────────────────────────┴───────────────────────────────┐   │
+│   │ Local Room DB & Memory Manager (Chats, Tasks, Projects, Media) │   │
+│   └────────────────────────────────────────────────────────────────┘   │
+└────────────────────────────────────────────────────────────────────────┘═══════════════════════════════════════════
+   الخطة النهائية لتطوير تطبيق Lazaynova AI
+═══════════════════════════════════════════
+
+──────────────────────────────
+المرحلة 1: الأساس والنواة [مكتملة ✅]
+──────────────────────────────
+[✓] هيكل المشروع وربط Gradle
+[✓] قاعدة بيانات Room (محادثات، مهام، ذاكرة، مشاريع)
+[✓] AgentOrchestrator + آلة الحالة (تحليل→تخطيط→تنفيذ→تحقق→اكتمل)
+[✓] موجه النوايا (مسار سريع / مسار معقد)
+[✓] الباكند الكامل (FastAPI + PostgreSQL + Redis + Sandbox + JWT)
+[✓] Docker Compose للنشر
+
+──────────────────────────────
+المرحلة 2: الواجهة والتفاعل [مكتملة ✅]
+──────────────────────────────
+[✓] القائمة الجانبية اليسرى (المكتبة، الوسائط، الإعدادات)
+[✓] لوحة الفحص اليمنى (الملف الشخصي + بطاقة الوكيل 3D)
+[✓] شاشة المحادثة (إدخال نيون، بث حي، Markdown، كتل كود)
+[✓] نافذة اختيار المهام (رفع ملفات/كاميرا/صور + شبكة الأدوات 8)
+[✓] قائمة السياق بالضغط المطوّل (تفاعلات + نسخ + مشاركة)
+[✓] حفظ التفاعلات في Room (الإصدار 2)
+
+──────────────────────────────
+المرحلة 3: التنظيف والاستقرار [الحالية]
+──────────────────────────────
+[1] إصلاح التحذيرات المُهملة:
+    - استبدال Divider بـ HorizontalDivider
+    - استبدال Icons.Filled.MenuBook/Article بنسخ AutoMirrored
+    - تحديث fallbackToDestructiveMigration
+[2] متابعة استثناء KSP (تأكيد أنه عَرَضي)
+[3] كتابة اختبارات وحدات إضافية (ViewModel + المكونات الحرجة)
+
+الأوامر:
+gradle :app:build --warning-mode all
+gradle :app:testDebugUnitTest
+gradle clean
+gradle :app:assembleDebug
+
+──────────────────────────────
+المرحلة 4: المصادقة والحسابات
+──────────────────────────────
+[1] شاشة تسجيل الدخول / إنشاء حساب (Firebase Auth + Google)
+[2] ربط الحساب المحلي بنظام المصادقة
+[3] المزامنة السحابية (Room ↔ PostgreSQL)
+[4] استعادة الجلسات والمحادثات عند تسجيل الدخول
+
+الملفات المطلوبة:
+- ui/screens/LoginScreen.kt
+- data/auth/AuthRepository.kt
+- تعديل ui/LazaynovaViewModel.kt (isLoggedIn + userProfile)
+
+الأوامر:
+gradle :app:testDebugUnitTest
+
+──────────────────────────────
+المرحلة 5: الصوت والوسائط
+──────────────────────────────
+[1] أذونات الميكروفون والكاميرا في AndroidManifest.xml
+[2] المحادثات الصوتية (Gemini Live API)
+[3] توليد الصور (Imagen)
+[4] توليد الفيديو (Veo)
+[5] توليد الموسيقى (Lyria)
+[6] البحث العميق (Google Search API)
+[7] نقل الصوت لنص (Transcribe)
+[8] ربط شبكة الأدوات الـ8 بنقاط نهاية الباكند
+
+الأذونات المطلوبة:
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.INTERNET" />
+
+الأوامر:
+gradle :app:assembleDebug
+
+──────────────────────────────
+المرحلة 6: الاختبار والإطلاق
+──────────────────────────────
+[1] اختبارات UI شاملة (Compose Test)
+[2] تفعيل R8/ProGuard (minify + shrinkResources)
+[3] إنشاء Keystore وحفظه بأمان
+[4] بناء نسخة Release (AAB)
+[5] الرفع على Google Play:
+    - Internal Testing → Closed Testing → Production
+[6] مراقبة الأعطال (Crashlytics) وتحليلات الاستخدام
+
+الأوامر:
+gradle :app:connectedDebugAndroidTest
+gradle :app:assembleRelease
+
+──────────────────────────────
+قائمة التحقق النهائية قبل الإطلاق
+──────────────────────────────
+[ ] جميع الاختبارات خضراء (Unit + UI)
+[ ] لا تحذيرات Deprecated متبقية
+[ ] الباكند منشور و Docker يعمل
+[ ] المصادقة تعمل (دخول/خروج/استعادة جلسة)
+[ ] الأذونات تُطلب في وقت التشغيل
+[ ] نسخة Release (AAB) جاهزة
+[ ] Keystore محفوظ مع نسخة احتياطية
+
+──────────────────────────────
+الترتيب المقترح للتنفيذ
+──────────────────────────────
+مرحلة 3 (تنظيف) → مرحلة 4 (مصادقة) → مرحلة 5 (صوت/وسائط) → مرحلة 6 (إطلاق)
+═══════════════════════════════════════════
+- name: Setup .NET Core SDK
+  uses: actions/setup-dotnet@v6.0.0
+  with:
+    # Optional SDK version(s) to use. If not provided, will install global.json version when available. Examples: 2.2.104, 3.1, 3.1.x, 3.x, 6.0.2xx, latest
+    dotnet-version: # optional
+    # Optional quality of the build. The possible values are: daily, preview, ga.
+    dotnet-quality: # optional
+    # Optional channel for the installation. The possible values are: STS, LTS, A.B (e.g. 8.0), A.B.Cxx (e.g. 8.0.1xx, available since 5.0). To be used with "dotnet-version: latest".
+    dotnet-channel: # optional
+    # Optional global.json location, if your global.json isn't located in the root of the repo.
+    global-json-file: # optional
+    # Optional package source for which to set up authentication. Will consult any existing NuGet.config in the root of the repo and provide a temporary NuGet.config using the NUGET_AUTH_TOKEN environment variable as a ClearTextPassword
+    source-url: # optional
+    # Optional OWNER for using packages from GitHub Package Registry organizations/users other than the current repository's owner. Only used if a GPR URL is also provided in source-url
+    owner: # optional
+    # Optional NuGet.config location, if your NuGet.config isn't located in the root of the repo.
+    config-file: # optional
+    # Optional input to enable caching of the NuGet global-packages folder
+    cache: # optional
+    # Used to specify the path to a dependency file: packages.lock.json. Supports wildcards or a list of file names for caching multiple dependencies.
+    cache-dependency-path: # optional
+    # Optional SDK workloads to install for additional platform support. Examples: wasm-tools, maui, aspire.
+    workloads: # optional
+    # Optional architecture for the .NET install. Supported values: x64, x86, arm64, amd64, arm, s390x, ppc64le, riscv64. If not set, the installer auto-detects the current system architecture.
+    architecture: # optional
